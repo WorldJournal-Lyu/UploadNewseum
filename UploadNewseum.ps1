@@ -51,7 +51,7 @@ $emailParam = @{
     Pass    = $mailPass
     To      = $mailTo
     Subject = $mailSbj
-    Body    = $scriptName + " completed at: " + (Get-Date).ToString("yyyyMMdd HH:mm:ss") + "`n`n" + $mailMsg
+    Body    = $scriptName + " completed at: " + (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") + "`n`n" + $mailMsg
     ScriptPath = $scriptPath
     Attachment = $log
 }
