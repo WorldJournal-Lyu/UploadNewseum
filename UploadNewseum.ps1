@@ -34,10 +34,22 @@ Write-Line -Length 100 -Path $log
 ###################################################################################
 
 
-$Newseum = Get-WJFTP -Name Newseum | Where-Object{$_.User -eq 'ny_wjny'}
-$Newseum.Path
-$Newseum.User
-$Newseum.Pass
+
+#$ftp    = Get-WJFTP -Name Newseum | Where-Object{$_.User -eq 'ny_wjny'}
+$ftp    = Get-WJFTP -Name WorldJournalNewYork
+$ePaper = Get-WJPath -Name epaper
+$workDate = ((Get-Date).AddDays(0)).ToString("yyyyMMdd")
+
+$localFileName  = "NY" + $workDate + "A01.pdf"
+$localFilePath  = $ePaper.Path + $workDate + "\optimizeda\" + $localFileName
+$remoteFileName = "NY_WJNY_" + $workDate + ".pdf"
+#$remoteFilePath = $ftp.Path + $remoteFileName
+$remoteFilePath = $ftp.Path + "temp\" +  $remoteFileName
+
+$webClient = New-Object System.Net.WebClient 
+$webClient.Credentials = New-Object System.Net.NetworkCredential($ftp.User, $ftp.Pass)  
+$uri       = New-Object System.Uri($remoteFilePath) 
+$webClient.UploadFile($uri, $localFilePath)
 
 
 
@@ -51,7 +63,7 @@ $emailParam = @{
     Pass    = $mailPass
     To      = $mailTo
     Subject = $mailSbj
-    Body    = $scriptName + " completed at: " + (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") + "`n`n" + $mailMsg
+    Body    = $scriptName + " completed at: " + (Get-Date).ToString("HH:mm:ss") + "`n`n" + $mailMsg
     ScriptPath = $scriptPath
     Attachment = $log
 }
