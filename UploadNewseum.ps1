@@ -10,6 +10,7 @@ if (!($env:PSModulePath -match 'C:\\PowerShell\\_Modules')) {
     $env:PSModulePath = $env:PSModulePath + ';C:\PowerShell\_Modules\'
 }
 
+Import-Module WorldJournal.Ftp -Verbose -Force
 Import-Module WorldJournal.Log -Verbose -Force
 Import-Module WorldJournal.Email -Verbose -Force
 Import-Module WorldJournal.Server -Verbose -Force
@@ -39,22 +40,33 @@ Write-Line -Length 100 -Path $log
 $ftp    = Get-WJFTP -Name WorldJournalNewYork
 $ePaper = Get-WJPath -Name epaper
 $workDate = ((Get-Date).AddDays(0)).ToString("yyyyMMdd")
+Write-Log -Verb "ftp" -Noun $ftp.Path -Path $log -Type Short -Status Normal
+Write-Log -Verb "ePaper" -Noun $ePaper.Path -Path $log -Type Short -Status Normal
+Write-Log -Verb "workDate" -Noun $workDate -Path $log -Type Short -Status Normal
+
 
 $localFileName  = "NY" + $workDate + "A01.pdf"
 $localFilePath  = $ePaper.Path + $workDate + "\optimizeda\" + $localFileName
+$localFilePath2 = "C:\temp\" + $localFileName
 $remoteFileName = "NY_WJNY_" + $workDate + ".pdf"
-#$remoteFilePath = $ftp.Path + $remoteFileName
-$remoteFilePath = $ftp.Path + "temp\" +  $remoteFileName
+$remoteFilePath = $ftp.Path + $remoteFileName
 
-$webClient = New-Object System.Net.WebClient 
-$webClient.Credentials = New-Object System.Net.NetworkCredential($ftp.User, $ftp.Pass)  
-$uri       = New-Object System.Uri($remoteFilePath) 
-$webClient.UploadFile($uri, $localFilePath)
+Write-Log -Verb "localFileName" -Noun $localFileName -Path $log -Type Short -Status Normal
+Write-Log -Verb "localFilePath" -Noun $localFilePath -Path $log -Type Short -Status Normal
+Write-Log -Verb "remoteFileName" -Noun $remoteFileName -Path $log -Type Short -Status Normal
+Write-Log -Verb "remoteFilePath" -Noun $remoteFilePath -Path $log -Type Short -Status Normal
+
+$upload = WebClient-UploadFile -Username $ftp.User -Password $ftp.Pass -RemoteFilePath $remoteFilePath -LocalFilePath $localFilePath
+Write-Log -Verb $upload.Verb -Noun $upload.Noun -Path $log -Type Long -Status $upload.Status
+
+$download = WebClient-DownloadFile -Username $ftp.User -Password $ftp.Pass -RemoteFilePath $remoteFilePath -LocalFilePath $localFilePath2
+Write-Log -Verb $download.Verb -Noun $download.Noun -Path $log -Type Long -Status $download.Status
 
 
 
 ###################################################################################
 
+Write-Line -Length 100 -Path $log
 Write-Log -Verb "LOG END" -Noun $log -Path $log -Type Long -Status Normal
 if($hasError){ $mailSbj = "ERROR " + $scriptName }
 
@@ -67,4 +79,5 @@ $emailParam = @{
     ScriptPath = $scriptPath
     Attachment = $log
 }
-Emailv2 @emailParam
+#Emailv2 @emailParam
+$emailParam.Body
