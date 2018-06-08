@@ -3,6 +3,7 @@
 UploadNewseum.ps1
 
     2018-06-05 Initial Creation
+    2018-06-08 Ready for production
 
 #>
 
@@ -56,11 +57,28 @@ Write-Log -Verb "localFilePath" -Noun $localFilePath -Path $log -Type Short -Sta
 Write-Log -Verb "remoteFileName" -Noun $remoteFileName -Path $log -Type Short -Status Normal
 Write-Log -Verb "remoteFilePath" -Noun $remoteFilePath -Path $log -Type Short -Status Normal
 
+Write-Log -Verb "UPLOAD FROM" -Noun $localFilePath -Path $log -Type Long -Status Normal
+Write-Log -Verb "UPLOAD TO" -Noun $remoteFilePath -Path $log -Type Long -Status Normal
 $upload = WebClient-UploadFile -Username $ftp.User -Password $ftp.Pass -RemoteFilePath $remoteFilePath -LocalFilePath $localFilePath
-Write-Log -Verb $upload.Verb -Noun $upload.Noun -Path $log -Type Long -Status $upload.Status
+$mailMsg = $mailMsg + (Write-Log -Verb $upload.Verb -Noun $upload.Noun -Path $log -Type Long -Status $upload.Status -Output String) + "`n"
 
+Write-Log -Verb "DOWNLOAD FROM" -Noun $remoteFilePath -Path $log -Type Long -Status Normal
+Write-Log -Verb "DOWNLOAD TO" -Noun $localFilePath2 -Path $log -Type Long -Status Normal
 $download = WebClient-DownloadFile -Username $ftp.User -Password $ftp.Pass -RemoteFilePath $remoteFilePath -LocalFilePath $localFilePath2
-Write-Log -Verb $download.Verb -Noun $download.Noun -Path $log -Type Long -Status $download.Status
+$mailMsg = $mailMsg + (Write-Log -Verb $download.Verb -Noun $download.Noun -Path $log -Type Long -Status $download.Status -Output String) + "`n"
+
+Write-Log -Verb "REMOVING" -Noun $localFilePath2 -Path $log -Type Long -Status Normal
+try{
+    $temp = $localFilePath2
+    Remove-Item $localFilePath2 -Force
+    $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun "Complete" -Path $log -Type Long -Status Good -Output String)
+}catch{
+    $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun "Complete" -Path $log -Type Long -Status Bad -Output String)
+}
+
+if( ($upload.Status -eq 'Bad') -or ($download.Status -eq 'Bad') ){
+    $hasError = $true
+}
 
 
 
@@ -75,9 +93,8 @@ $emailParam = @{
     Pass    = $mailPass
     To      = $mailTo
     Subject = $mailSbj
-    Body    = $scriptName + " completed at: " + (Get-Date).ToString("HH:mm:ss") + "`n`n" + $mailMsg
+    Body    = $scriptName + " completed at " + (Get-Date).ToString("HH:mm:ss") + "`n`n" + $mailMsg
     ScriptPath = $scriptPath
     Attachment = $log
 }
-#Emailv2 @emailParam
-$emailParam.Body
+Emailv2 @emailParam
