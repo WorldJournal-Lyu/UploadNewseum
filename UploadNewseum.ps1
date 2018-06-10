@@ -45,10 +45,12 @@ Write-Log -Verb "ftp" -Noun $ftp.Path -Path $log -Type Short -Status Normal
 Write-Log -Verb "ePaper" -Noun $ePaper.Path -Path $log -Type Short -Status Normal
 Write-Log -Verb "workDate" -Noun $workDate -Path $log -Type Short -Status Normal
 
+$localTemp = "C:\temp\" + $scriptName + "\"
+if (!(Test-Path($localTemp))) {New-Item $localTemp -Type Directory | Out-Null}
 
 $localFileName  = "NY" + $workDate + "A01.pdf"
 $localFilePath  = $ePaper.Path + $workDate + "\optimizeda\" + $localFileName
-$localFilePath2 = "C:\temp\" + $localFileName
+$localFilePath2 = $localTemp + $localFileName
 $remoteFileName = "NY_WJNY_" + $workDate + ".pdf"
 $remoteFilePath = $ftp.Path + $remoteFileName
 
