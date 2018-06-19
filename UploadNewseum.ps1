@@ -39,9 +39,9 @@ Write-Line -Length 100 -Path $log
 
 # Set up variables
 
-#$ftp    = Get-WJFTP -Name WorldJournalNewYork
-$ftp    = Get-WJFTP -Name Newseum | Where-Object{$_.User -eq 'ny_wjny'}
-$ePaper = Get-WJPath -Name epaper
+#$ftp      = Get-WJFTP -Name WorldJournalNewYork
+$ftp      = Get-WJFTP -Name Newseum | Where-Object{$_.User -eq 'ny_wjny'}
+$ePaper   = Get-WJPath -Name epaper
 $workDate = ((Get-Date).AddDays(0)).ToString("yyyyMMdd")
 Write-Log -Verb "ftp" -Noun $ftp.Path -Path $log -Type Short -Status Normal
 Write-Log -Verb "ePaper" -Noun $ePaper.Path -Path $log -Type Short -Status Normal
