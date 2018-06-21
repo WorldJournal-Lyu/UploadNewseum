@@ -52,7 +52,7 @@ if (!(Test-Path($localTemp))) {New-Item $localTemp -Type Directory | Out-Null}
 
 $localFileName  = "NY" + $workDate + "A01.pdf"
 $localFilePath  = $ePaper.Path + $workDate + "\optimizeda\" + $localFileName
-$localFilePath2 = $localTemp + (Get-Date).ToString("yyyyMMddHHmmss") + ".pdf"
+$localFilePath2 = $localTemp + (Get-Date).ToString("yyyyMMdd-HHmmss") + ".pdf"
 $remoteFileName = "NY_WJNY_" + $workDate + ".pdf"
 $remoteFilePath = $ftp.Path + $remoteFileName
 
