@@ -89,12 +89,12 @@ if($download.Status -eq "Bad"){
 
 
 
-# Delete the downloaded file from temp
+# Delete temp folder
 
-Write-Log -Verb "REMOVE" -Noun $localFilePath2 -Path $log -Type Long -Status Normal
+Write-Log -Verb "REMOVE" -Noun $localTemp -Path $log -Type Long -Status Normal
 try{
-    $temp = $localFilePath2
-    Remove-Item $localFilePath2 -Force -ErrorAction Stop
+    $temp = $localTemp
+    Remove-Item $localTemp -Recurse -Force -ErrorAction Stop
     $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Good -Output String) + "`n"
 }catch{
     $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Bad -Output String) + "`n"
