@@ -30,10 +30,15 @@ $mailTo     = (Get-WJEmail -Name lyu).MailAddress
 $mailSbj    = $scriptName
 $mailMsg    = ""
 
+$localTemp = "C:\temp\" + $scriptName + "\"
+if (!(Test-Path($localTemp))) {New-Item $localTemp -Type Directory | Out-Null}
+
 Write-Log -Verb "LOG START" -Noun $log -Path $log -Type Long -Status Normal
 Write-Line -Length 100 -Path $log
 
 ###################################################################################
+
+
 
 
 
@@ -43,28 +48,24 @@ Write-Line -Length 100 -Path $log
 $ftp      = Get-WJFTP -Name Newseum | Where-Object{$_.User -eq 'ny_wjny'}
 $ePaper   = Get-WJPath -Name epaper
 $workDate = ((Get-Date).AddDays(0)).ToString("yyyyMMdd")
-Write-Log -Verb "ftp" -Noun $ftp.Path -Path $log -Type Short -Status Normal
-Write-Log -Verb "ePaper" -Noun $ePaper.Path -Path $log -Type Short -Status Normal
+Write-Log -Verb "ftp     " -Noun $ftp.Path -Path $log -Type Short -Status Normal
+Write-Log -Verb "ePaper  " -Noun $ePaper.Path -Path $log -Type Short -Status Normal
 Write-Log -Verb "workDate" -Noun $workDate -Path $log -Type Short -Status Normal
-
-$localTemp = "C:\temp\" + $scriptName + "\"
-if (!(Test-Path($localTemp))) {New-Item $localTemp -Type Directory | Out-Null}
 
 $localFileName  = "NY" + $workDate + "A01.pdf"
 $localFilePath  = $ePaper.Path + $workDate + "\optimizeda\" + $localFileName
 $localFilePath2 = $localTemp + (Get-Date).ToString("yyyyMMdd-HHmmss") + ".pdf"
 $remoteFileName = "NY_WJNY_" + $workDate + ".pdf"
 $remoteFilePath = $ftp.Path + $remoteFileName
-
-Write-Log -Verb "localFileName" -Noun $localFileName -Path $log -Type Short -Status Normal
-Write-Log -Verb "localFilePath" -Noun $localFilePath -Path $log -Type Short -Status Normal
+Write-Log -Verb "localFileName " -Noun $localFileName -Path $log -Type Short -Status Normal
+Write-Log -Verb "localFilePath " -Noun $localFilePath -Path $log -Type Short -Status Normal
+Write-Log -Verb "localFilePath2" -Noun $localFilePath2 -Path $log -Type Short -Status Normal
 Write-Log -Verb "remoteFileName" -Noun $remoteFileName -Path $log -Type Short -Status Normal
 Write-Log -Verb "remoteFilePath" -Noun $remoteFilePath -Path $log -Type Short -Status Normal
 
 
 
 # Upload file from local to Ftp
-# Functions Used: WebClient-UploadFile
 
 Write-Log -Verb "UPLOAD FROM" -Noun $localFilePath -Path $log -Type Long -Status Normal
 Write-Log -Verb "UPLOAD TO" -Noun $remoteFilePath -Path $log -Type Long -Status Normal
@@ -80,7 +81,6 @@ if($upload.Status -eq "Good"){
 
 
 # Download file from Ftp to temp from verification
-# Functions Used: WebClient-DownloadFile
 
 Write-Log -Verb "DOWNLOAD FROM" -Noun $remoteFilePath -Path $log -Type Long -Status Normal
 Write-Log -Verb "DOWNLOAD TO" -Noun $localFilePath2 -Path $log -Type Long -Status Normal
@@ -95,6 +95,8 @@ if($download.Status -eq "Good"){
 
 
 
+
+
 # Delete temp folder
 
 Write-Log -Verb "REMOVE" -Noun $localTemp -Path $log -Type Long -Status Normal
@@ -106,8 +108,6 @@ try{
     $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Bad -Output String) + "`n"
     $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception.Message -Path $log -Type Short -Status Bad -Output String) + "`n"
 }
-
-
 
 # Set hasError status
 
