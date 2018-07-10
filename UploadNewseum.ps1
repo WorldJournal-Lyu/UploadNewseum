@@ -69,8 +69,11 @@ Write-Log -Verb "remoteFilePath" -Noun $remoteFilePath -Path $log -Type Short -S
 Write-Log -Verb "UPLOAD FROM" -Noun $localFilePath -Path $log -Type Long -Status Normal
 Write-Log -Verb "UPLOAD TO" -Noun $remoteFilePath -Path $log -Type Long -Status Normal
 $upload = WebClient-UploadFile -Username $ftp.User -Password $ftp.Pass -RemoteFilePath $remoteFilePath -LocalFilePath $localFilePath
-$mailMsg = $mailMsg + (Write-Log -Verb $upload.Verb -Noun $upload.Noun -Path $log -Type Long -Status $upload.Status -Output String) + "`n"
-if($upload.Status -eq "Bad"){
+
+if($upload.Status -eq "Good"){
+    Write-Log -Verb $upload.Verb -Noun $upload.Noun -Path $log -Type Long -Status $upload.Status
+}elseif($upload.Status -eq "Bad"){
+    $mailMsg = $mailMsg + (Write-Log -Verb $upload.Verb -Noun $upload.Noun -Path $log -Type Long -Status $upload.Status -Output String) + "`n"
     $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $upload.Exception -Path $log -Type Short -Status $upload.Status -Output String) + "`n"
 }
 
@@ -82,8 +85,11 @@ if($upload.Status -eq "Bad"){
 Write-Log -Verb "DOWNLOAD FROM" -Noun $remoteFilePath -Path $log -Type Long -Status Normal
 Write-Log -Verb "DOWNLOAD TO" -Noun $localFilePath2 -Path $log -Type Long -Status Normal
 $download = WebClient-DownloadFile -Username $ftp.User -Password $ftp.Pass -RemoteFilePath $remoteFilePath -LocalFilePath $localFilePath2
-$mailMsg = $mailMsg + (Write-Log -Verb $download.Verb -Noun $download.Noun -Path $log -Type Long -Status $download.Status -Output String) + "`n"
-if($download.Status -eq "Bad"){
+
+if($download.Status -eq "Good"){
+    Write-Log -Verb $download.Verb -Noun $download.Noun -Path $log -Type Long -Status $download.Status
+}elseif($download.Status -eq "Bad"){
+    $mailMsg = $mailMsg + (Write-Log -Verb $download.Verb -Noun $download.Noun -Path $log -Type Long -Status $download.Status -Output String) + "`n"
     $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $download.Exception -Path $log -Type Short -Status $download.Status -Output String) + "`n"
 }
 
@@ -95,7 +101,7 @@ Write-Log -Verb "REMOVE" -Noun $localTemp -Path $log -Type Long -Status Normal
 try{
     $temp = $localTemp
     Remove-Item $localTemp -Recurse -Force -ErrorAction Stop
-    $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Good -Output String) + "`n"
+    Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Good
 }catch{
     $mailMsg = $mailMsg + (Write-Log -Verb "REMOVE" -Noun $temp -Path $log -Type Long -Status Bad -Output String) + "`n"
     $mailMsg = $mailMsg + (Write-Log -Verb "Exception" -Noun $_.Exception.Message -Path $log -Type Short -Status Bad -Output String) + "`n"
