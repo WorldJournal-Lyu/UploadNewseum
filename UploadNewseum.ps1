@@ -54,7 +54,7 @@ Write-Log -Verb "workDate" -Noun $workDate -Path $log -Type Short -Status Normal
 
 $localFileName  = "NY" + $workDate + "A01.pdf"
 $localFilePath  = $ePaper.Path + $workDate + "\optimizeda\" + $localFileName
-$tempFilePath = $localTemp + (Get-Date).ToString("yyyyMMdd-HHmmss") + ".pdf"
+$tempFilePath   = $localTemp + (Get-Date).ToString("yyyyMMdd-HHmmss") + ".pdf"
 $remoteFileName = "NY_WJNY_" + $workDate + ".pdf"
 $remoteFilePath = $ftp.Path + $remoteFileName
 Write-Log -Verb "localFileName " -Noun $localFileName -Path $log -Type Short -Status Normal
