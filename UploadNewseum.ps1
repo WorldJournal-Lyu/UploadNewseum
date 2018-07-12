@@ -54,14 +54,14 @@ Write-Log -Verb "workDate" -Noun $workDate -Path $log -Type Short -Status Normal
 
 $localFileName  = "NY" + $workDate + "A01.pdf"
 $localFilePath  = $ePaper.Path + $workDate + "\optimizeda\" + $localFileName
-$localFilePath2 = $localTemp + (Get-Date).ToString("yyyyMMdd-HHmmss") + ".pdf"
+$tempFilePath = $localTemp + (Get-Date).ToString("yyyyMMdd-HHmmss") + ".pdf"
 $remoteFileName = "NY_WJNY_" + $workDate + ".pdf"
 $remoteFilePath = $ftp.Path + $remoteFileName
 Write-Log -Verb "localFileName " -Noun $localFileName -Path $log -Type Short -Status Normal
 Write-Log -Verb "localFilePath " -Noun $localFilePath -Path $log -Type Short -Status Normal
-Write-Log -Verb "localFilePath2" -Noun $localFilePath2 -Path $log -Type Short -Status Normal
 Write-Log -Verb "remoteFileName" -Noun $remoteFileName -Path $log -Type Short -Status Normal
 Write-Log -Verb "remoteFilePath" -Noun $remoteFilePath -Path $log -Type Short -Status Normal
+Write-Log -Verb "tempFilePath  " -Noun $tempFilePath -Path $log -Type Short -Status Normal
 
 
 
@@ -83,8 +83,8 @@ if($upload.Status -eq "Good"){
 # Download file from Ftp to temp from verification
 
 Write-Log -Verb "DOWNLOAD FROM" -Noun $remoteFilePath -Path $log -Type Long -Status Normal
-Write-Log -Verb "DOWNLOAD TO" -Noun $localFilePath2 -Path $log -Type Long -Status Normal
-$download = WebClient-DownloadFile -Username $ftp.User -Password $ftp.Pass -RemoteFilePath $remoteFilePath -LocalFilePath $localFilePath2
+Write-Log -Verb "DOWNLOAD TO" -Noun $tempFilePath -Path $log -Type Long -Status Normal
+$download = WebClient-DownloadFile -Username $ftp.User -Password $ftp.Pass -RemoteFilePath $remoteFilePath -LocalFilePath $tempFilePath
 
 if($download.Status -eq "Good"){
     Write-Log -Verb $download.Verb -Noun $download.Noun -Path $log -Type Long -Status $download.Status
