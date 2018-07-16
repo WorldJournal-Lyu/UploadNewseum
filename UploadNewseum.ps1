@@ -3,7 +3,6 @@
 UploadNewseum.ps1
 
     2018-06-05 Initial Creation
-    2018-06-08 Ready for production
 
 #>
 
