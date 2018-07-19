@@ -33,7 +33,7 @@ $localTemp = "C:\temp\" + $scriptName + "\"
 if (!(Test-Path($localTemp))) {New-Item $localTemp -Type Directory | Out-Null}
 
 Write-Log -Verb "LOG START" -Noun $log -Path $log -Type Long -Status Normal
-Write-Line -Length 100 -Path $log
+Write-Line -Length 50 -Path $log
 
 ###################################################################################
 
@@ -118,7 +118,7 @@ if( ($upload.Status -eq "Bad") -or ($download.Status -eq "Bad") ){
 
 ###################################################################################
 
-Write-Line -Length 100 -Path $log
+Write-Line -Length 50 -Path $log
 Write-Log -Verb "LOG END" -Noun $log -Path $log -Type Long -Status Normal
 if($hasError){ $mailSbj = "ERROR " + $scriptName }
 
