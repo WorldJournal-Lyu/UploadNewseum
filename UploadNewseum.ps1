@@ -47,28 +47,28 @@ Write-Line -Length 50 -Path $log
 $ftp      = Get-WJFTP -Name Newseum | Where-Object{$_.User -eq 'ny_wjny'}
 $ePaper   = Get-WJPath -Name epaper
 $workDate = ((Get-Date).AddDays(0)).ToString("yyyyMMdd")
-Write-Log -Verb "ftp     " -Noun $ftp.Path -Path $log -Type Short -Status Normal
-Write-Log -Verb "ePaper  " -Noun $ePaper.Path -Path $log -Type Short -Status Normal
+Write-Log -Verb "ftp" -Noun $ftp.Path -Path $log -Type Short -Status Normal
+Write-Log -Verb "ePaper" -Noun $ePaper.Path -Path $log -Type Short -Status Normal
 Write-Log -Verb "workDate" -Noun $workDate -Path $log -Type Short -Status Normal
 
-$localFileName  = "NY" + $workDate + "A01.pdf"
-$localFilePath  = $ePaper.Path + $workDate + "\optimizeda\" + $localFileName
-$tempFilePath   = $localTemp + (Get-Date).ToString("yyyyMMdd-HHmmss") + ".pdf"
-$remoteFileName = "NY_WJNY_" + $workDate + ".pdf"
-$remoteFilePath = $ftp.Path + $remoteFileName
-Write-Log -Verb "localFileName " -Noun $localFileName -Path $log -Type Short -Status Normal
-Write-Log -Verb "localFilePath " -Noun $localFilePath -Path $log -Type Short -Status Normal
-Write-Log -Verb "remoteFileName" -Noun $remoteFileName -Path $log -Type Short -Status Normal
-Write-Log -Verb "remoteFilePath" -Noun $remoteFilePath -Path $log -Type Short -Status Normal
-Write-Log -Verb "tempFilePath  " -Noun $tempFilePath -Path $log -Type Short -Status Normal
+Write-Line -Length 50 -Path $log
+
+$pdfName      = "NY_WJNY_" + $workDate + ".pdf"
+$uploadFrom   = $ePaper.Path + $workDate + "\optimizeda\" + "NY" + $workDate + "A01.pdf"
+$uploadTo     = $ftp.Path + $pdfName
+$downloadFrom = $uploadTo
+$downloadTo   = $localTemp + (Get-Date).ToString("yyyyMMdd-HHmmss") + ".pdf"
+Write-Log -Verb "pdfName" -Noun $pdfName -Path $log -Type Short -Status Normal
+Write-Log -Verb "uploadFrom" -Noun $uploadFrom -Path $log -Type Short -Status Normal
+Write-Log -Verb "uploadTo" -Noun $uploadTo -Path $log -Type Short -Status Normal
+Write-Log -Verb "downloadFrom" -Noun $downloadFrom -Path $log -Type Short -Status Normal
+Write-Log -Verb "downloadTo" -Noun $downloadTo -Path $log -Type Short -Status Normal
 
 
 
 # Upload file from local to Ftp
 
-Write-Log -Verb "UPLOAD FROM" -Noun $localFilePath -Path $log -Type Long -Status Normal
-Write-Log -Verb "UPLOAD TO" -Noun $remoteFilePath -Path $log -Type Long -Status Normal
-$upload = WebClient-UploadFile -Username $ftp.User -Password $ftp.Pass -RemoteFilePath $remoteFilePath -LocalFilePath $localFilePath
+$upload = WebClient-UploadFile -Username $ftp.User -Password $ftp.Pass -RemoteFilePath $uploadTo -LocalFilePath $uploadFrom
 
 if($upload.Status -eq "Good"){
     Write-Log -Verb $upload.Verb -Noun $upload.Noun -Path $log -Type Long -Status $upload.Status
@@ -81,9 +81,7 @@ if($upload.Status -eq "Good"){
 
 # Download file from Ftp to temp from verification
 
-Write-Log -Verb "DOWNLOAD FROM" -Noun $remoteFilePath -Path $log -Type Long -Status Normal
-Write-Log -Verb "DOWNLOAD TO" -Noun $tempFilePath -Path $log -Type Long -Status Normal
-$download = WebClient-DownloadFile -Username $ftp.User -Password $ftp.Pass -RemoteFilePath $remoteFilePath -LocalFilePath $tempFilePath
+$download = WebClient-DownloadFile -Username $ftp.User -Password $ftp.Pass -RemoteFilePath $downloadFrom -LocalFilePath $downloadTo
 
 if($download.Status -eq "Good"){
     Write-Log -Verb $download.Verb -Noun $download.Noun -Path $log -Type Long -Status $download.Status
@@ -127,7 +125,7 @@ $emailParam = @{
     Pass    = $mailPass
     To      = $mailTo
     Subject = $mailSbj
-    Body    = $scriptName + " completed at " + (Get-Date).ToString("HH:mm:ss") + "`n`n" + $mailMsg
+    Body    = $mailMsg
     ScriptPath = $scriptPath
     Attachment = $log
 }
